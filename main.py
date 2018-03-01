@@ -15,7 +15,7 @@ for filename in argv[1:]:
             ii+=1
         print(rides_list)
 
-        rides_list = sorted(rides_list, key=itemgetter(5), reverse=True)
+        rides_list = sorted(rides_list, key=itemgetter(6), reverse=True)
         print(rides_list)
         veh_rides = []
         for v in range(veh):
