@@ -5,23 +5,20 @@ from sys import argv
 rides_list = []
 
 
-def ridedoable(current_ride, next_ride):
-    distance_to_start = abs(current_ride[3] - next_ride[1]) + abs(current_ride[4] - next_ride[2])
+def time_to_finish(veh_parm, next_ride):
+    distance_to_start = abs(veh_parm[1] - next_ride[1]) + abs(veh_parm[2] - next_ride[2])
     distance_to_finish = abs(next_ride[3] - next_ride[1]) + abs(next_ride[4] - next_ride[2])
 
-    current_time = current_ride[6]
+    veh_time = veh_parm[0]
     max_time = next_ride[6]
 
-    if distance_to_finish < next_ride[6] - next_ride[5]:
-        return False
+    if distance_to_start + veh_time >= next_ride[5] and veh_time + distance_to_start + distance_to_finish <= max_time:
+        return veh_time + distance_to_start + distance_to_finish
 
-    if distance_to_start + current_time <= next_ride[5]:
-        return True
+    if distance_to_start + veh_time <= next_ride[5]:
+        return next_ride[5] + distance_to_finish
 
-    if distance_to_start + distance_to_finish <= max_time:
-        return True
-
-    return False
+    return 0
 
 
 for filename in argv[1:]:
@@ -41,7 +38,8 @@ for filename in argv[1:]:
         print(rides_list)
         veh_rides = []
         for v in range(veh):
-            veh_rides.append([rides_list.pop()])
+            veh_rides.append([[0,0,0]])
+        print(veh_rides)
         ii = 0
         while(rides_list):
             currnt_index = rides_list[-1][0]
@@ -50,11 +48,13 @@ for filename in argv[1:]:
             else:
                 v = ii+1
             while v != ii:
-                if ridedoable(veh_rides[v][-1], rides_list[-1]):
+                ttf = time_to_finish(veh_rides[v][0], rides_list[-1])
+                if ttf:
+                    veh_rides[v][0] = [ttf, rides_list[-1][3], rides_list[-1][4]]
                     veh_rides[v].append(rides_list.pop())
                     ii = v
                     break
-                if v  == veh - 1:
+                if v == veh - 1:
                     v = 0
                 else:
                     v += 1
@@ -63,7 +63,7 @@ for filename in argv[1:]:
         print(veh_rides)
         with open(filename.replace('.in', '.out'), 'w') as output:
             for vr in veh_rides:
-                output.write(str(len(vr)) + " ")
-                for r in vr:
+                output.write(str(len(vr)-1) + " ")
+                for r in vr[1:]:
                     output.write(str(r[0]) + " ")
                 output.write("\n")
