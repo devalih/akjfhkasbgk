@@ -42,24 +42,17 @@ for filename in argv[1:]:
         print(veh_rides)
         ii = 0
         while(rides_list):
-            currnt_index = rides_list[-1][0]
-            if ii == veh - 1:
-                v = 0
-            else:
-                v = ii+1
-            while v != ii:
-                ttf = time_to_finish(veh_rides[v][0], rides_list[-1])
-                if ttf:
-                    veh_rides[v][0] = [ttf, rides_list[-1][3], rides_list[-1][4]]
-                    veh_rides[v].append(rides_list.pop())
-                    ii = v
-                    break
-                if v == veh - 1:
-                    v = 0
-                else:
-                    v += 1
-            if rides_list and currnt_index == rides_list[-1][0]:
-                rides_list.pop()
+            minttf = 99999999
+            minveh = 0
+            for v in veh_rides:
+                ttf = time_to_finish(v[0], rides_list[-1])
+                if ttf and ttf <= minttf:
+                    minttf = ttf
+                    minveh = v
+            if minveh:
+                minveh[0] = [minttf, rides_list[-1][3], rides_list[-1][4]]
+                v.append(rides_list[-1])
+            rides_list.pop()
         print(veh_rides)
         with open(filename.replace('.in', '.out'), 'w') as output:
             for vr in veh_rides:
